@@ -49,6 +49,7 @@ if __name__ == '__main__':
     parser.add_argument('--checkpoint_dir', type=str, help='location of checkpoints', default="checkpoints")
     parser.add_argument('--workers', type=int, help='number of data loading workers', default=4)
     parser.add_argument('--data_parallel', type=bool, help='whether to parallelise based on data (default: False)', default=False)
+    parser.add_argument('--max_n', type=int, help="maximum number of examples in dataset (default: -1, ie all)", default=-1)
     args = parser.parse_args()
 
     # Create model and optimizer
@@ -63,8 +64,9 @@ if __name__ == '__main__':
     mu_scheme = Annealer(5 * 10 ** (-4), 5 * 10 ** (-5), 1.6e6)
 
     # Load the dataset
-    train_dataset = ShepardMetzler(root_dir=args.data_dir)
-    valid_dataset = ShepardMetzler(root_dir=args.data_dir, train=False)
+    kwargs = {'max_n': args.max_n}
+    train_dataset = ShepardMetzler(root_dir=args.data_dir, **kwargs)
+    valid_dataset = ShepardMetzler(root_dir=args.data_dir, train=False, **kwargs)
 
     kwargs = {'num_workers': args.workers, 'pin_memory': True} if cuda else {}
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, **kwargs)
@@ -114,9 +116,12 @@ if __name__ == '__main__':
     ProgressBar().attach(trainer, metric_names=metric_names)
 
     # Model checkpointing
-    checkpoint_handler = ModelCheckpoint(args.checkpoint_dir, "checkpoint", save_interval=1, n_saved=2,
-                                         require_empty=False)
+    checkpoint_handler = ModelCheckpoint(args.checkpoint_dir, "checkpoint", save_interval=1, n_saved=2, require_empty=False)
     trainer.add_event_handler(event_name=Events.EPOCH_COMPLETED, handler=checkpoint_handler,
+                              to_save={'model': model, 'optimizer': optimizer})
+
+    long_backup = ModelCheckpoint(args.checkpoint_dir, "icecold", save_interval=30, n_saved=2, require_empty=False)
+    trainer.add_event_handler(event_name=Events.EPOCH_COMPLETED, handler=long_backup,
                               to_save={'model': model, 'optimizer': optimizer})
 
     timer = Timer(average=True).attach(trainer, start=Events.EPOCH_STARTED, resume=Events.ITERATION_STARTED,
