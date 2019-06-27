@@ -1,6 +1,5 @@
 
 import random
-from torch.utils.data import DataLoader
 
 def shapes(*args):
   for t in args:

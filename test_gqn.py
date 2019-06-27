@@ -1,11 +1,10 @@
 import torch
-import torch.nn as nn
 from torch.utils.data import DataLoader
 from torch.distributions import Normal
 
 from building_blocks.gqn import GenerativeQueryNetwork
-from data.datasets import ShepardMetzler, Scene, transform_viewpoint
-from training import partition
+from data.datasets import ShepardMetzler
+from building_blocks.training import partition
 
 """
 --------------------------- Data Pipeline Test ----------------------------
