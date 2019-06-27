@@ -15,7 +15,7 @@ Scene = collections.namedtuple('Scene', ['frames', 'cameras'])
 class ShepardMetzler(Dataset):
 
   def __init__(self, root_dir,
-               train=True,
+               train=True, transform_views=True,
                transform=None, target_transform=None):
     prefix = "train" if train else "test"
     self.root_dir = os.path.join(root_dir, prefix)
@@ -27,6 +27,7 @@ class ShepardMetzler(Dataset):
     self.records = sorted([p for p in os.listdir(self.root_dir) if "pt" in p])
     self.transform = transform
     self.target_transform = target_transform
+    self.transform_views = transform_views
 
 
   def __len__(self):
@@ -45,10 +46,13 @@ class ShepardMetzler(Dataset):
       viewpoints = viewpoints.view(-1, 5)
 
       if self.transform:
-          images = self.transform(images)
+        images = self.transform(images)
+
+      if self.transform_views:
+        viewpoints = transform_viewpoint(viewpoints)
 
       if self.target_transform:
-          viewpoints = self.target_transform(viewpoints)
+        viewpoints = self.target_transform(viewpoints)
 
       return images, viewpoints
 
@@ -64,4 +68,3 @@ def transform_viewpoint(v):
   v_hat = torch.cat(view_vector, dim=-1)
 
   return v_hat
-
