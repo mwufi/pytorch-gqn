@@ -15,7 +15,7 @@ Scene = collections.namedtuple('Scene', ['frames', 'cameras'])
 class ShepardMetzler(Dataset):
 
   def __init__(self, root_dir,
-               train=True, transform_views=True,
+               train=True, transform_views=True, max_n=-1,
                transform=None, target_transform=None):
     prefix = "train" if train else "test"
     self.root_dir = os.path.join(root_dir, prefix)
@@ -25,6 +25,9 @@ class ShepardMetzler(Dataset):
       return
 
     self.records = sorted([p for p in os.listdir(self.root_dir) if "pt" in p])
+    if max_n:
+      self.records = self.records[:max_n]
+
     self.transform = transform
     self.target_transform = target_transform
     self.transform_views = transform_views
