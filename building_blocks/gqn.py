@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 from .representation import TowerRepresentation
-from .generator_core import GeneratorNetwork
+from .generator_network import GeneratorNetwork
 
 
 class GenerativeQueryNetwork(nn.Module):
