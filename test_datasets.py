@@ -22,4 +22,6 @@ def test_batch(dataset):
 
 
 if __name__ == '__main__':
-  test_batch(ShepardMetzler('./data/dummy', train=False))
+  dataset = ShepardMetzler('./data/dummy', train=False)
+  test_batch(dataset)
+
