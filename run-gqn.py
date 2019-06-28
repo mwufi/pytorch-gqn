@@ -44,7 +44,7 @@ if __name__ == '__main__':
     parser = ArgumentParser(description='Generative Query Network on Shepard Metzler Example')
     parser.add_argument('--n_epochs', type=int, default=200, help='number of epochs run (default: 200)')
     parser.add_argument('--batch_size', type=int, default=1, help='multiple of batch size (default: 1)')
-    parser.add_argument('--data_dir', type=str, help='location of data', default="data/dummy")
+    parser.add_argument('--data_dir', type=str, help='location of data', default="data/shepard_metzler_5_parts-torch")
     parser.add_argument('--log_dir', type=str, help='location of logging', default="log")
     parser.add_argument('--checkpoint_dir', type=str, help='location of checkpoints', default="checkpoints")
     parser.add_argument('--workers', type=int, help='number of data loading workers', default=4)
