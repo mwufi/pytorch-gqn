@@ -1,4 +1,4 @@
-gin
+gin-config
 tensorboardX
 pytorch-ignite
 tqdm

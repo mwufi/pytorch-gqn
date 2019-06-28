@@ -3,7 +3,7 @@ from torch.utils.data import DataLoader
 from torch.distributions import Normal
 
 from building_blocks.gqn import GenerativeQueryNetwork
-from data.datasets import ShepardMetzler
+from data.datasets import ShepardMetzler, Scene
 from building_blocks.training import partition
 
 """
@@ -20,7 +20,7 @@ device = torch.device("cuda:0" if cuda else "cpu")
 
 
 dataset = ShepardMetzler('data/dummy')
-model = GenerativeQueryNetwork(x_dim=3, v_dim=7, r_dim=256, h_dim=128, z_dim=64, L=8, share=True)
+model = GenerativeQueryNetwork(x_dim=3, v_dim=7, r_dim=256, h_dim=128, z_dim=64, L=8, share=True).to(device)
 train_loader = DataLoader(dataset, batch_size = 2, shuffle=True)
 
 optimizer = torch.optim.Adam(model.parameters(), lr=5 * 10 ** (-5))
