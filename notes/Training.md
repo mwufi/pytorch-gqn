@@ -27,8 +27,8 @@ python run-gqn.py --data_parallel=True --batch_size=192 --workers=16
 ```
 
 This gives the following:
-![CPU/memory utilization](run1/Screen Shot 2019-06-28 at 1.58.52 PM.png)
-![GPU utilization](run1/Screen Shot 2019-06-28 at 2.10.28 PM.png)
-![Training](run1/Screen Shot 2019-06-28 at 1.58.58 PM.png)
+![CPU/memory utilization](https://raw.githubusercontent.com/mwufi/pytorch-gqn/master/notes/run1/Screen%20Shot%202019-06-28%20at%201.58.52%20PM.png)
+![GPU utilization](https://raw.githubusercontent.com/mwufi/pytorch-gqn/master/notes/run1/Screen%20Shot%202019-06-28%20at%202.10.28%20PM.png)
+![Training](https://raw.githubusercontent.com/mwufi/pytorch-gqn/master/notes/run1/Screen%20Shot%202019-06-28%20at%201.58.58%20PM.png)
 
 I'm going to let it train for a while and watch on Tensorboard!
