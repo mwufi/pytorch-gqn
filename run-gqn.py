@@ -43,13 +43,14 @@ torch.backends.cudnn.benchmark = False
 if __name__ == '__main__':
     parser = ArgumentParser(description='Generative Query Network on Shepard Metzler Example')
     parser.add_argument('--n_epochs', type=int, default=200, help='number of epochs run (default: 200)')
-    parser.add_argument('--batch_size', type=int, default=1, help='multiple of batch size (default: 1)')
+    parser.add_argument('--batch_size', type=int, default=36, help='multiple of batch size (default: 1)')
     parser.add_argument('--data_dir', type=str, help='location of data', default="data/shepard_metzler_5_parts-torch")
     parser.add_argument('--log_dir', type=str, help='location of logging', default="log")
     parser.add_argument('--checkpoint_dir', type=str, help='location of checkpoints', default="checkpoints")
     parser.add_argument('--workers', type=int, help='number of data loading workers', default=4)
     parser.add_argument('--data_parallel', type=bool, help='whether to parallelise based on data (default: False)', default=False)
     parser.add_argument('--max_n', type=int, help="maximum number of examples in dataset (default: -1, ie all)", default=-1)
+    parser.add_argument('--eval_n', type=int, help="evaluate every n iterations", default=1000)
     args = parser.parse_args()
 
     # Create model and optimizer
@@ -104,7 +105,7 @@ if __name__ == '__main__':
             for group in optimizer.param_groups:
                 group["lr"] = mu * math.sqrt(1 - 0.999 ** i) / (1 - 0.9 ** i)
 
-        return {"elbo": elbo.item(), "kl": kl_divergence.item(), "sigma": sigma, "mu": mu}
+        return {"elbo": elbo.item(), "kl": kl_divergence.item(), "sigma": sigma, "mu": mu }
 
     # Trainer and metrics
     trainer = Engine(step)
@@ -116,12 +117,8 @@ if __name__ == '__main__':
     ProgressBar().attach(trainer, metric_names=metric_names)
 
     # Model checkpointing
-    checkpoint_handler = ModelCheckpoint(args.checkpoint_dir, "checkpoint", save_interval=1, n_saved=2, require_empty=False)
-    trainer.add_event_handler(event_name=Events.EPOCH_COMPLETED, handler=checkpoint_handler,
-                              to_save={'model': model, 'optimizer': optimizer})
-
-    long_backup = ModelCheckpoint(args.checkpoint_dir, "icecold", save_interval=30, n_saved=2, require_empty=False)
-    trainer.add_event_handler(event_name=Events.EPOCH_COMPLETED, handler=long_backup,
+    checkpoint_handler = ModelCheckpoint(args.checkpoint_dir, "checkpoint", save_interval=5000, n_saved=2, require_empty=False)
+    trainer.add_event_handler(event_name=Events.ITERATION_COMPLETED, handler=checkpoint_handler,
                               to_save={'model': model, 'optimizer': optimizer})
 
     timer = Timer(average=True).attach(trainer, start=Events.EPOCH_STARTED, resume=Events.ITERATION_STARTED,
@@ -130,52 +127,54 @@ if __name__ == '__main__':
     # Tensorbard writer
     writer = SummaryWriter(logdir=args.log_dir)
 
+
     @trainer.on(Events.ITERATION_COMPLETED)
     def log_metrics(engine):
         for key, value in engine.state.metrics.items():
             writer.add_scalar("training/{}".format(key), value, engine.state.iteration)
 
-    @trainer.on(Events.EPOCH_COMPLETED)
+    @trainer.on(Events.ITERATION_COMPLETED)
     def save_images(engine):
-        with torch.no_grad():
-            x, v = engine.state.batch
-            x, v = x.to(device), v.to(device)
-            x, v, x_q, v_q = partition(x, v)
+        if engine.state.iteration % args.eval_n == 0:
+            with torch.no_grad():
+                x, v = engine.state.batch
+                x, v = x.to(device), v.to(device)
+                x, v, x_q, v_q = partition(x, v)
 
-            x_mu, r, _ = model(x, v, x_q, v_q)
+                x_mu, r, _ = model(x, v, x_q, v_q)
 
-            r = r.view(-1, 1, 16, 16)
+                r = r.view(-1, 1, 16, 16)
 
-            # Send to CPU
-            x_mu = x_mu.detach().cpu().float()
-            r = r.detach().cpu().float()
+                # Send to CPU
+                x_mu = x_mu.detach().cpu().float()
+                r = r.detach().cpu().float()
 
-            writer.add_image("representation", make_grid(r), engine.state.epoch)
-            writer.add_image("reconstruction", make_grid(x_mu), engine.state.epoch)
+                writer.add_image("representation", make_grid(r), engine.state.epoch)
+                writer.add_image("reconstruction", make_grid(x_mu), engine.state.epoch)
 
-    @trainer.on(Events.EPOCH_COMPLETED)
+    @trainer.on(Events.ITERATION_COMPLETED)
     def validate(engine):
-        model.eval()
-        print("EVAL")
-        with torch.no_grad():
-            x, v = next(iter(valid_loader))
-            x, v = x.to(device), v.to(device)
-            x, v, x_q, v_q = partition(x, v)
+        if engine.state.iteration % args.eval_n == 0:
+            model.eval()
+            with torch.no_grad():
+                x, v = next(iter(valid_loader))
+                x, v = x.to(device), v.to(device)
+                x, v, x_q, v_q = partition(x, v)
 
-            # Reconstruction, representation and divergence
-            x_mu, _, kl = model(x, v, x_q, v_q)
+                # Reconstruction, representation and divergence
+                x_mu, _, kl = model(x, v, x_q, v_q)
 
-            # Validate at last sigma
-            ll = Normal(x_mu, sigma_scheme.recent).log_prob(x_q)
+                # Validate at last sigma
+                ll = Normal(x_mu, sigma_scheme.recent).log_prob(x_q)
 
-            likelihood = torch.mean(torch.sum(ll, dim=[1, 2, 3]))
-            kl_divergence = torch.mean(torch.sum(kl, dim=[1, 2, 3]))
+                likelihood = torch.mean(torch.sum(ll, dim=[1, 2, 3]))
+                kl_divergence = torch.mean(torch.sum(kl, dim=[1, 2, 3]))
 
-            # Evidence lower bound
-            elbo = likelihood - kl_divergence
+                # Evidence lower bound
+                elbo = likelihood - kl_divergence
 
-            writer.add_scalar("validation/elbo", elbo.item(), engine.state.epoch)
-            writer.add_scalar("validation/kl", kl_divergence.item(), engine.state.epoch)
+                writer.add_scalar("validation/elbo", elbo.item(), engine.state.epoch)
+                writer.add_scalar("validation/kl", kl_divergence.item(), engine.state.epoch)
 
     @trainer.on(Events.EXCEPTION_RAISED)
     def handle_exception(engine, e):
