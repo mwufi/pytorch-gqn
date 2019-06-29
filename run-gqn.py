@@ -149,8 +149,8 @@ if __name__ == '__main__':
                 x_mu = x_mu.detach().cpu().float()
                 r = r.detach().cpu().float()
 
-                writer.add_image("representation", make_grid(r), engine.state.epoch)
-                writer.add_image("reconstruction", make_grid(x_mu), engine.state.epoch)
+                writer.add_image("representation", make_grid(r), engine.state.iteration)
+                writer.add_image("reconstruction", make_grid(x_mu), engine.state.iteration)
 
     @trainer.on(Events.ITERATION_COMPLETED)
     def validate(engine):
@@ -173,8 +173,8 @@ if __name__ == '__main__':
                 # Evidence lower bound
                 elbo = likelihood - kl_divergence
 
-                writer.add_scalar("validation/elbo", elbo.item(), engine.state.epoch)
-                writer.add_scalar("validation/kl", kl_divergence.item(), engine.state.epoch)
+                writer.add_scalar("validation/elbo", elbo.item(), engine.state.iteration)
+                writer.add_scalar("validation/kl", kl_divergence.item(), engine.state.iteration)
 
     @trainer.on(Events.EXCEPTION_RAISED)
     def handle_exception(engine, e):
