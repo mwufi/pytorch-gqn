@@ -123,6 +123,12 @@ if __name__ == '__main__':
     trainer.add_event_handler(event_name=Events.ITERATION_COMPLETED, handler=checkpoint_handler,
                               to_save={'model': model.state_dict(), 'optimizer': optimizer.state_dict(), 'mu': mu_scheme, 'sigma': sigma_scheme})
 
+    archiver = ModelCheckpoint(args.checkpoint_dir, "archive", save_interval=args.eval_n * 10, n_saved=20,
+                                         require_empty=False, save_as_state_dict=False)
+    trainer.add_event_handler(event_name=Events.ITERATION_COMPLETED, handler=archiver,
+                              to_save={'model': model.state_dict(), 'optimizer': optimizer.state_dict(),
+                                       'mu': mu_scheme, 'sigma': sigma_scheme})
+
     timer = Timer(average=True).attach(trainer, start=Events.EPOCH_STARTED, resume=Events.ITERATION_STARTED,
                  pause=Events.ITERATION_COMPLETED, step=Events.ITERATION_COMPLETED)
 
@@ -153,6 +159,7 @@ if __name__ == '__main__':
                  for x in ["model", "optimizer", "mu", "sigma"]}
         loaded = {x: savedIn(file) for x, file in files.items()}
 
+        mu = sigma = None
         for name, k in loaded.items():
             if not k:
                 print("Unable to load {}".format(files[name]))
