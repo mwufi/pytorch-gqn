@@ -5,6 +5,7 @@ Script to train the a GQN on the Shepard-Metzler dataset
 in accordance to the hyperparameter settings described in
 the supplementary materials of the paper.
 """
+import os
 import random
 import math
 from argparse import ArgumentParser
@@ -51,6 +52,7 @@ if __name__ == '__main__':
     parser.add_argument('--data_parallel', type=bool, help='whether to parallelise based on data (default: False)', default=False)
     parser.add_argument('--max_n', type=int, help="maximum number of examples in dataset (default: -1, ie all)", default=-1)
     parser.add_argument('--eval_n', type=int, help="evaluate every n iterations", default=1000)
+    parser.add_argument('--resume', type=str, help="iteration to resume at. Helps locate the file in args.checkpoint_dir", default="")
     args = parser.parse_args()
 
     # Create model and optimizer
@@ -117,9 +119,9 @@ if __name__ == '__main__':
     ProgressBar().attach(trainer, metric_names=metric_names)
 
     # Model checkpointing
-    checkpoint_handler = ModelCheckpoint(args.checkpoint_dir, "checkpoint", save_interval=5000, n_saved=2, require_empty=False)
+    checkpoint_handler = ModelCheckpoint(args.checkpoint_dir, "checkpoint", save_interval=args.eval_n, n_saved=2, require_empty=False, save_as_state_dict=False)
     trainer.add_event_handler(event_name=Events.ITERATION_COMPLETED, handler=checkpoint_handler,
-                              to_save={'model': model, 'optimizer': optimizer})
+                              to_save={'model': model.state_dict(), 'optimizer': optimizer.state_dict(), 'mu': mu_scheme, 'sigma': sigma_scheme})
 
     timer = Timer(average=True).attach(trainer, start=Events.EPOCH_STARTED, resume=Events.ITERATION_STARTED,
                  pause=Events.ITERATION_COMPLETED, step=Events.ITERATION_COMPLETED)
@@ -127,6 +129,55 @@ if __name__ == '__main__':
     # Tensorbard writer
     writer = SummaryWriter(logdir=args.log_dir)
 
+
+    def savedIn(filename):
+        name = os.path.join(args.checkpoint_dir, filename)
+        if os.path.isfile(name):
+            print("=> loading checkpoint '{}'".format(filename))
+            checkpoint = torch.load(name)
+            return checkpoint
+
+    def updateAnnealers(steps):
+        print(f"Fast forwarding rates to {steps} steps")
+        for i in range(steps):
+            # Rate annealing schemes
+            next(sigma_scheme)
+            next(mu_scheme)
+
+    def loadCheckpoint():
+        global mu_scheme, sigma_scheme
+        if args.resume == "":
+            return
+
+        files = {x: "checkpoint_{}_{}.pth".format(x, args.resume)
+                 for x in ["model", "optimizer", "mu", "sigma"]}
+        loaded = {x: savedIn(file) for x, file in files.items()}
+
+        for name, k in loaded.items():
+            if not k:
+                print("Unable to load {}".format(files[name]))
+                continue
+
+            if name == "model":
+                model.load_state_dict(k)
+            elif name == "optimizer":
+                optimizer.load_state_dict(k)
+            elif name == "mu":
+                mu = k
+            elif name == "sigma":
+                sigma = k
+
+        # If we don't have a saved model here, don't do anything else
+        if not loaded['model']:
+            return
+
+        if mu is None or sigma is None:
+            updateAnnealers(int(args.resume))
+        else:
+            mu_scheme = mu
+            sigma_scheme = sigma
+
+        print("=> LOADING CHECKPOINT_{} SUCCESS!".format(args.resume))
 
     @trainer.on(Events.ITERATION_COMPLETED)
     def log_metrics(engine):
@@ -186,5 +237,6 @@ if __name__ == '__main__':
             checkpoint_handler(engine, { 'model_exception': model })
         else: raise e
 
+    loadCheckpoint()
     trainer.run(train_loader, args.n_epochs)
     writer.close()
