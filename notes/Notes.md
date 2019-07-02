@@ -34,16 +34,18 @@ source .bashrc
 
 ## Running a training loop
 
-Added a lot of stuff in building blocks! Go see for yourself!
+- `test_gqn.py` -- tests one step
+- `run-gqn.py` -- uses [@wohlert](https://github.com/wohlert/generative-query-network-pytorch)'s Ignite code
 
-- test_gqn.py -- tests one step
-- run-gqn.py -- uses `wohlert`'s Ignite code
+Computer: Uh oh, Tmux died
 
+Me: 
+```bash
+tmux -CC
+```
 
-## Commercial break!!
+## Commercial
 
-Switched to developing on PyCharm :)
-
-[https://stackoverflow.com/questions/21236824/unresolved-reference-issue-in-pycharm]
-
+How to get Pycharm to recognize the imports:
+[here](https://stackoverflow.com/questions/21236824/unresolved-reference-issue-in-pycharm)
 
