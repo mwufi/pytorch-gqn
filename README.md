@@ -74,7 +74,7 @@ Sure, right [here](https://console.cloud.google.com/storage/browser/transformer-
 
 **Why do the images in `fun/Interactive.ipynb` suck?**
 
-I only trained it for about 40k gradient steps (each one from a mini-batch of 36 scenes). I think the paper had like... 2 million gradient steps?
+I only trained it for about 40k gradient steps (each one from a mini-batch of 36 scenes). I think the paper had like... 2 million gradient steps? [The 5k Gradient Steps More Fund](https://paypal.me/ZenTang/10.57)
 
 **Help, something happened!**
 
@@ -87,7 +87,7 @@ Need lots of help on this! If you're a researcher, graphic designer, student, ga
 
 Some ideas:
 - I want this to be more accessible. This could take the form of visualizations, code comments, tutorial/guides, chat group? Hmm.
-- If anyone is interested in starting a joint fund for people to learn and train AI models, I'm down
+- If anyone is interested in starting a joint fund for people to learn and train AI models, I'm down. 
 - Train the model (even 1 epoch helps!) and contribute the checkpoints to the world!
 - Analysis is _laaaacking_. Add more things to the `fun` folder!
 - Experiment with different domains!
