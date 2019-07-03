@@ -66,7 +66,7 @@ Almost anything, you just have to code stuff. 🌼You can:
 
 Check out the `/fun` folder for my first attempts. Lots more to be done here, so please submit (many) a pull request with suggestions!
 
-# FAQ
+## FAQ
 
 **If I _don't_ want to train my own model, can I grab the checkpoints that you have?**
 
@@ -81,9 +81,9 @@ I only trained it for about 40k gradient steps (each one from a mini-batch of 36
 _IS IT A MURDERFISH?!!_ ....... if not, I made a help document, see if that helps?
 
 
-# Contributing
+## Contributing
 
-Need lots of help on this! If you're a graphic designer, student, garden cat, aspiring engineer, auto mech, you name it: chances are, you spot something that you like/don't like/want this to do/can fix! Open a pull request!
+Need lots of help on this! If you're a researcher, graphic designer, student, garden cat, aspiring engineer, auto mech, you name it: chances are, you spot something that you like/don't like/want this to do/can fix! Open a pull request!
 
 Some ideas:
 - I want this to be more accessible. This could take the form of visualizations, code comments, tutorial/guides, chat group? Hmm.
@@ -91,3 +91,7 @@ Some ideas:
 - Train the model (even 1 epoch helps!) and contribute the checkpoints to the world!
 - Analysis is _laaaacking_. Add more things to the `fun` folder!
 - Experiment with different domains!
+
+## License
+
+It's yours :) You wrote it. Now take good care of it
