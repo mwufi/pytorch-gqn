@@ -4,7 +4,9 @@ Do you want to learn unsupervised representations of 3D scenes? Boy do I have th
 
 <img src="https://cdn.arstechnica.net/wp-content/uploads/2018/06/Screen-Shot-2018-06-28-at-4.18.25-PM-800x534.png">
 
-Yet another implementation of [Neural Scene Representation and Rendering (Eslami et al 2018)](https://deepmind.com/blog/neural-scene-representation-and-rendering/). 
+Watch a video: https://vimeo.com/345774866
+
+This is an implementation of [Neural Scene Representation and Rendering (Eslami et al 2018)](https://deepmind.com/blog/neural-scene-representation-and-rendering/). 
 
 The authors are all pretty cool: S. M. Ali Eslami, Danilo Jimenez Rezende, Frederic Besse, Fabio Viola, Ari S. Morcos, Marta Garnelo
 
