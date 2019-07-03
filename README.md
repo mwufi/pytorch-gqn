@@ -58,7 +58,7 @@ _fast forward a few hours, or days_: Awesome! we have a checkpoint, and the imag
 
 **What can a trained model do?**
 
-Almost anything, you just have to be patient. Just kidding. You can:
+Almost anything, you just have to code stuff. 🌼You can:
 - delete half the weights?
 - watch the activations as an image passes through it
 - compare the representations for different scenes
@@ -66,7 +66,7 @@ Almost anything, you just have to be patient. Just kidding. You can:
 
 Check out the `/fun` folder for my first attempts. Lots more to be done here, so please submit (many) a pull request with suggestions!
 
-## FAQ
+# FAQ
 
 **If I _don't_ want to train my own model, can I grab the checkpoints that you have?**
 
@@ -76,13 +76,18 @@ Sure, right [here](https://console.cloud.google.com/storage/browser/transformer-
 
 I only trained it for about 40k gradient steps (each one from a mini-batch of 36 scenes). I think the paper had like... 2 million gradient steps?
 
-## Help
+**Help, something happened!**
 
-**During training**
+_IS IT A MURDERFISH?!!_ ....... if not, I made a help document, see if that helps?
 
-If your computer breaks, you can pass it a `--resume` argument next time:
-```
-python run-gqn.py --data_parallel=True --batch_size=144 --workers=2 --resume=343000 (or whatever the last checkpoint number was)
-```
 
-You might be asking: What do the graphs mean? We only log ELBO and KL at the moment, but we should probably log more metrics! to get a better picture of how our neural net is doing
+# Contributing
+
+Need lots of help on this! If you're a graphic designer, student, garden cat, aspiring engineer, auto mech, you name it: chances are, you spot something that you like/don't like/want this to do/can fix! Open a pull request!
+
+Some ideas:
+- I want this to be more accessible. This could take the form of visualizations, code comments, tutorial/guides, chat group? Hmm.
+- If anyone is interested in starting a joint fund for people to learn and train AI models, I'm down
+- Train the model (even 1 epoch helps!) and contribute the checkpoints to the world!
+- Analysis is _laaaacking_. Add more things to the `fun` folder!
+- Experiment with different domains!
