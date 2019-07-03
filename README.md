@@ -1,5 +1,9 @@
 # 🌈 pytorch-gqn
 
+Do you want to learn unsupervised representations of 3D scenes? Boy do I have the kick for you 🕍
+
+Presenting:
+
 Yet another implementation of [Neural Scene Representation and Rendering (Eslami et al 2018)](https://deepmind.com/blog/neural-scene-representation-and-rendering/). 
 
 The authors are all pretty cool: S. M. Ali Eslami, Danilo Jimenez Rezende, Frederic Besse, Fabio Viola, Ari S. Morcos, Marta Garnelo
