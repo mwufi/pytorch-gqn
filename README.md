@@ -27,11 +27,9 @@ Steps:
 2. Training your ~dragon~ *neural nets*
 3. How to tell that it works (and exploring what it can do)
 
-Steps 1 and 2 are optional (and more straightforward? Since the authors did all the hard work for us already by telling us how the net is built and so forth). I've trained a GQN for ~40k gradient steps (see `/notes` for more details), so there's checkpoints that you can use out of the box.
+Steps 1 and 2 are optional (and more straightforward? Since the authors did all the hard work for us already by telling us how the net is built and so forth). I've trained a GQN for ~40k gradient steps (see `/notes` for more details), so there's checkpoints that you can use out of the box! You can skip to (3)
 
-However, if you want to do it (just for fun):
-
-**Step 1) Getting training data**
+### 1. Getting training data
 
 You should probably start by deciding what dataset to use. I used `shepard_metzler_5_parts`, but there are others: [here](https://github.com/deepmind/gqn-datasets). Personally I'd like to see one trained on `rooms_ring_camera_with_object_rotations`, but that's just me 😊
 
@@ -44,7 +42,7 @@ Great! Now we have training data. When I was writing the various bits, I wrote t
 - `test_building_blocks.py` will see if your neural net is OK
 - `test_gqn.py` will run one step of training (load the data, load the model, etc). If this passes, you should be ready to scale to full training!
 
-**Step 2) Running the training/evaluation loop**
+### 2. Running the training/evaluation loop
 
 ```
 python run-gqn.py --data_parallel=True --batch_size=144 --workers=2
@@ -56,7 +54,7 @@ Note to self (and everyone): Add some tips about logging/keeping track of stuff 
 
 _fast forward a few hours, or days_: Awesome! we have a checkpoint, and the images on Tensorboard look pretty good. What now?
 
-**Step 3) Analysing your results**
+### 3. You've got a GQN! Now what?
 
 **What can a trained model do?**
 
@@ -68,7 +66,7 @@ Almost anything, you just have to be patient. Just kidding. You can:
 
 Check out the `/fun` folder for my first attempts. Lots more to be done here, so please submit (many) a pull request with suggestions!
 
-## Yes?
+## FAQ
 
 **If I _don't_ want to train my own model, can I grab the checkpoints that you have?**
 
