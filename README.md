@@ -2,7 +2,7 @@
 
 Do you want to learn unsupervised representations of 3D scenes? Boy do I have the kick for you 🕍
 
-Presenting:
+<img src="https://cdn.arstechnica.net/wp-content/uploads/2018/06/Screen-Shot-2018-06-28-at-4.18.25-PM-800x534.png">
 
 Yet another implementation of [Neural Scene Representation and Rendering (Eslami et al 2018)](https://deepmind.com/blog/neural-scene-representation-and-rendering/). 
 
